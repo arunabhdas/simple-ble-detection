@@ -11,7 +11,7 @@
         android:layout_alignParentTop="true"
         android:text="@string/label_BLE_device"
         android:textSize="20sp"
-        android:textColor="@color/Black" />
+        android:textColor="@color/white" />
     <TextView
         android:id="@+id/text_address"
         android:layout_width="100dp"
@@ -20,7 +20,7 @@
         android:layout_marginTop="5dp"
         android:text="@string/label_address"
         android:textStyle="bold"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/white" />
     <TextView
         android:id="@+id/text_address_value"
         android:layout_width="fill_parent"
@@ -28,7 +28,7 @@
         android:layout_below="@+id/text_ble"
         android:layout_toRightOf="@+id/text_address"
         android:layout_marginTop="5dp"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/white" />
     <TextView
         android:id="@+id/text_name"
         android:layout_width="100dp"
@@ -37,7 +37,7 @@
         android:layout_marginTop="5dp"
         android:text="@string/label_name"
         android:textStyle="bold"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/white" />
     <TextView
         android:id="@+id/text_name_value"
         android:layout_width="fill_parent"
@@ -45,7 +45,7 @@
         android:layout_below="@+id/text_address"
         android:layout_toRightOf="@+id/text_name"
         android:layout_marginTop="5dp"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/white" />
     <TextView
         android:id="@+id/text_rssi"
         android:layout_width="100dp"
@@ -54,7 +54,7 @@
         android:layout_marginTop="5dp"
         android:text="@string/label_rssi"
         android:textStyle="bold"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/white" />
     <TextView
         android:id="@+id/text_rssi_value"
         android:layout_width="100dp"
@@ -62,6 +62,6 @@
         android:layout_below="@+id/text_name"
         android:layout_toRightOf="@+id/text_rssi"
         android:layout_marginTop="5dp"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/white" />
 
 </RelativeLayout>

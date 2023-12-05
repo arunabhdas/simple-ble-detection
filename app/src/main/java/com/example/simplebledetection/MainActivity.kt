@@ -139,6 +139,14 @@ class MainActivity : AppCompatActivity() {
                 (ActivityCompat.checkSelfPermission(
                     context,
                     Manifest.permission.BLUETOOTH_SCAN
+                ) != PackageManager.PERMISSION_GRANTED) ||
+                (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED) ||
+                (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
                 ) != PackageManager.PERMISSION_GRANTED)
             ) {
                 Timber.d( "@isPermissionGranted: requesting Bluetooth on Android >= 12")
