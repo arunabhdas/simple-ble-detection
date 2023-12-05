@@ -80,7 +80,7 @@ class ScanService {
     fun stopBLEScan() {
         if (!isScanning)
             return
-        Timber.d(":-) - @startBLEScan stop beacon scan")
+        Timber.d(":-) - @stopBLEScan stop beacon scan")
         isScanning = false
         bluetoothLeScanner.stopScan(leScanCallback)
     }

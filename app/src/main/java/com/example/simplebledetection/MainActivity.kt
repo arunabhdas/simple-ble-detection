@@ -89,9 +89,12 @@ class MainActivity : AppCompatActivity() {
             // start scanning BLE device
             Timber.d( ":-) - scanService.initScanner()")
             if (scanService.isScanning()) {
+
+                Timber.d( ":-) - stopBLEScan() will be invoked")
                 binding.scanBtn.text = resources.getString(R.string.label_scan)
                 scanService.stopBLEScan()
             } else {
+                Timber.d( ":-) - startBLEScan() will be invoked")
                 scanService.startBLEScan()
                 binding.scanBtn.text = resources.getString(R.string.label_scanning)
             }
@@ -150,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                 ) != PackageManager.PERMISSION_GRANTED)
             ) {
                 Timber.d( "@isPermissionGranted: requesting Bluetooth on Android >= 12")
-                ActivityCompat.requestPermissions(this, ANDROID_12_BLE_PERMISSIONS, 2)
+                // TODO-FIXME-MULTIPLE ActivityCompat.requestPermissions(this, ANDROID_12_BLE_PERMISSIONS, 2)
                 return false
             }
         } else {
@@ -183,6 +186,13 @@ class MainActivity : AppCompatActivity() {
                 Timber.d( "@requestBluetooth Bluetooth is enabled")
             } else {
                 Timber.d( "@requestBluetooth Bluetooth usage is denied")
+            }
+        }
+
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                Log.d("test006", "${it.key} = ${it.value}")
             }
         }
 }
