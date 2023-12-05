@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplebledetection.databinding.ActivityMainBinding
+import timber.log.Timber
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +25,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var scanService: ScanService
     private lateinit var adapter: DeviceListAdapter
     private lateinit var deviceList: ArrayList<Any>
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val granted = permissions.entries.all { it.value }
+            if (granted) {
+                // All permissions are granted
+                Timber.d("All permissions granted")
+                scanService = ScanService(this, this.deviceList, this.adapter)
+            } else {
+                // Handle the case where permissions are denied
+                Timber.d("Permissions denied")
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,8 +53,10 @@ class MainActivity : AppCompatActivity() {
 
         // check for permission to scan BLE
         if (isPermissionGranted(this)) {
-            Log.d(TAG, "@onCreate init scan service")
+            Timber.d( ":-) - @onCreate init scan service")
             scanService = ScanService(this, this.deviceList, this.adapter)
+        } else {
+            requestPermissions()
         }
     }
 
@@ -65,12 +81,13 @@ class MainActivity : AppCompatActivity() {
     private fun startScan() {
         // check Bluetooth
         if (!scanService.isBluetoothEnabled()) {
-            Log.d(TAG, "@startScan Bluetooth is disabled")
+            Timber.d(":-) - @startScan Bluetooth is disabled")
             val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             requestBluetooth.launch(intent)
         } else {
             scanService.initScanner()
             // start scanning BLE device
+            Timber.d( ":-) - scanService.initScanner()")
             if (scanService.isScanning()) {
                 binding.scanBtn.text = resources.getString(R.string.label_scan)
                 scanService.stopBLEScan()
@@ -97,8 +114,10 @@ class MainActivity : AppCompatActivity() {
 
     // necessary permissions on Android >=12
     private val ANDROID_12_BLE_PERMISSIONS = arrayOf(
+
         Manifest.permission.BLUETOOTH_SCAN,
         Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
@@ -109,8 +128,9 @@ class MainActivity : AppCompatActivity() {
      * @param context
      * @return true if user has granted permission
      */
+
     private fun isPermissionGranted(context: Context): Boolean {
-        Log.d(TAG, "@isPermissionGranted: checking bluetooth")
+        Timber.d( ":-) - @isPermissionGranted: checking bluetooth")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if ((ActivityCompat.checkSelfPermission(
                     context,
@@ -121,7 +141,7 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.BLUETOOTH_SCAN
                 ) != PackageManager.PERMISSION_GRANTED)
             ) {
-                Log.d(TAG, "@isPermissionGranted: requesting Bluetooth on Android >= 12")
+                Timber.d( "@isPermissionGranted: requesting Bluetooth on Android >= 12")
                 ActivityCompat.requestPermissions(this, ANDROID_12_BLE_PERMISSIONS, 2)
                 return false
             }
@@ -131,21 +151,30 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                Log.d(TAG, "@isPermissionGranted: requesting Location on Android < 12")
+                Timber.d("@isPermissionGranted: requesting Location on Android < 12")
                 ActivityCompat.requestPermissions(this, BLE_PERMISSIONS, 3)
                 return false
             }
         }
-        Log.d(TAG, "@isPermissionGranted Bluetooth permission is ON")
+        Timber.d("@isPermissionGranted Bluetooth permission is ON")
         return true
+    }
+
+
+    private fun requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestPermissionLauncher.launch(ANDROID_12_BLE_PERMISSIONS)
+        } else {
+            requestPermissionLauncher.launch(BLE_PERMISSIONS)
+        }
     }
 
     private var requestBluetooth =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                Log.d(TAG, "@requestBluetooth Bluetooth is enabled")
+                Timber.d( "@requestBluetooth Bluetooth is enabled")
             } else {
-                Log.d(TAG, "@requestBluetooth Bluetooth usage is denied")
+                Timber.d( "@requestBluetooth Bluetooth usage is denied")
             }
         }
 }

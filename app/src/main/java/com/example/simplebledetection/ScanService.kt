@@ -8,6 +8,7 @@ import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.util.Log
+import timber.log.Timber
 
 class ScanService {
 
@@ -29,12 +30,13 @@ class ScanService {
 
         builder = ScanSettings.Builder()
         builder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-        Log.d(TAG, "set scan mode to low latency")
+        Timber.d(":-) - set scan mode to low latency")
         this.adapter = adapter
         bluetoothManager = context.getSystemService(BluetoothManager::class.java)
         bluetoothAdapter = bluetoothManager.adapter
         if (bluetoothAdapter == null) {
             // Device doesn't support Bluetooth
+            Timber.e(":-) Device doesn't support Bluetooth")
             throw Exception("Device doesn't support Bluetooth")
         }
         if (isBluetoothEnabled()) {
@@ -66,19 +68,19 @@ class ScanService {
     fun startBLEScan() {
         if (isScanning)
             return
-        Log.d(TAG, "@startBLEScan start beacon scan")
+        Timber.d(":-) - @startBLEScan start beacon scan")
         isScanning = true
         try {
             bluetoothLeScanner.startScan(null, builder.build(), leScanCallback)
         } catch (e: SecurityException) {
-            Log.e(TAG, "@startScan SecurityException: " + e.message)
+            Timber.e(":-) - @startScan SecurityException: " + e.message)
         }
     }
 
     fun stopBLEScan() {
         if (!isScanning)
             return
-        Log.d(TAG, "@startBLEScan start beacon scan")
+        Timber.d(":-) - @startBLEScan stop beacon scan")
         isScanning = false
         bluetoothLeScanner.stopScan(leScanCallback)
     }
@@ -90,14 +92,17 @@ class ScanService {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             if (result != null) {
                 val scanRecord = result.scanRecord
-                Log.e(TAG, "@result: " + result.device.address)
+                Timber.e(
+                    ":-) - @result: "
+                            + result.device.address
+                )
                 super.onScanResult(callbackType, result)
                 try {
                     if (scanRecord != null) {
                         if (isIBeacon(scanRecord.bytes)) {
                             val iBeacon = IBeacon(result, scanRecord.bytes)
                             val idx = checkDeviceExists(result)
-                            Log.e(TAG, iBeacon.toString())
+                            Timber.d(":-) - ---------${iBeacon.toString()}---------")
                             if (idx == -1) {
                                 deviceList.add(iBeacon)
                             } else {
