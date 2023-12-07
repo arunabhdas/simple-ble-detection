@@ -27,6 +27,10 @@ class IBeacon(scanResult: ScanResult, packetData: ByteArray) : BLEDevice(scanRes
     private val minorPosStart = 27
     private val minorPosEnd = 28
 
+    private var txPower: Int? = null
+    private val txPowerPosStart = 29
+    private val txPowerPosEnd = 29
+
     init {
         rawByteData = packetData
 
@@ -86,7 +90,23 @@ class IBeacon(scanResult: ScanResult, packetData: ByteArray) : BLEDevice(scanRes
         return minor as Int
     }
 
+    /**
+     * Get TxPower
+     * if minor is not calculated, calculate from packet raw data, then store to property
+     */
+
+    /**
+     * Get iBeacon TxPower
+     * Extracts the transmission power value from the iBeacon packet
+     */
+    fun getTxPower(): Int {
+        // The TxPower is located at the 29th byte of the iBeacon packet
+        // It's an 8-bit signed value
+        txPower = rawByteData[28].toInt()
+        return txPower as Int
+    }
+
     override fun toString(): String {
-        return "Major= " + major.toString() + " Minor= " + minor.toString() + " rssi=" + getRssi()
+        return "Major= " + getMajor() + " Minor= " + getMinor() + " rssi=" + getRssi() + " txPower " + getTxPower()
     }
 }
